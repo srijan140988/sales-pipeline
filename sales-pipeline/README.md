@@ -5,7 +5,7 @@ transforms it with Python, loads it into a normalized SQL data warehouse, and
 produces both static reports (Matplotlib/Seaborn) and a live interactive
 dashboard.
 
-**[Live Dashboard →](#)** _(deploy to Vercel — see below — then drop your link here)_
+https://sales-pipeline-pearl-eight.vercel.app/(live demo)
 
 ---
 
