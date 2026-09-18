@@ -1,0 +1,260 @@
+{
+  "kpis": {
+    "total_revenue": 1789871.84,
+    "total_orders": 5986,
+    "avg_order_value": 299.01,
+    "total_units_sold": 11618,
+    "unique_customers": 899,
+    "date_range": "2024-01-01 to 2025-12-31"
+  },
+  "monthly_revenue": [
+    {
+      "month": "Jan 2024",
+      "revenue": 75116.74
+    },
+    {
+      "month": "Feb 2024",
+      "revenue": 71028.34
+    },
+    {
+      "month": "Mar 2024",
+      "revenue": 74817.92
+    },
+    {
+      "month": "Apr 2024",
+      "revenue": 82503.93
+    },
+    {
+      "month": "May 2024",
+      "revenue": 76604.48
+    },
+    {
+      "month": "Jun 2024",
+      "revenue": 66623.35
+    },
+    {
+      "month": "Jul 2024",
+      "revenue": 73385.01
+    },
+    {
+      "month": "Aug 2024",
+      "revenue": 78993.35
+    },
+    {
+      "month": "Sep 2024",
+      "revenue": 82884.76
+    },
+    {
+      "month": "Oct 2024",
+      "revenue": 66136.92
+    },
+    {
+      "month": "Nov 2024",
+      "revenue": 68664.78
+    },
+    {
+      "month": "Dec 2024",
+      "revenue": 72968.8
+    },
+    {
+      "month": "Jan 2025",
+      "revenue": 85092.2
+    },
+    {
+      "month": "Feb 2025",
+      "revenue": 67982.3
+    },
+    {
+      "month": "Mar 2025",
+      "revenue": 79284.31
+    },
+    {
+      "month": "Apr 2025",
+      "revenue": 94080.17
+    },
+    {
+      "month": "May 2025",
+      "revenue": 77307.09
+    },
+    {
+      "month": "Jun 2025",
+      "revenue": 59479.89
+    },
+    {
+      "month": "Jul 2025",
+      "revenue": 68490.09
+    },
+    {
+      "month": "Aug 2025",
+      "revenue": 73115.59
+    },
+    {
+      "month": "Sep 2025",
+      "revenue": 63260.63
+    },
+    {
+      "month": "Oct 2025",
+      "revenue": 81794.7
+    },
+    {
+      "month": "Nov 2025",
+      "revenue": 68328.57
+    },
+    {
+      "month": "Dec 2025",
+      "revenue": 81927.92
+    }
+  ],
+  "top_products": [
+    {
+      "product_name": "USB-C Hub",
+      "revenue": 100153.24
+    },
+    {
+      "product_name": "Wireless Mouse",
+      "revenue": 94205.89
+    },
+    {
+      "product_name": "27in Monitor",
+      "revenue": 90218.55
+    },
+    {
+      "product_name": "Portable SSD 1TB",
+      "revenue": 89537.84
+    },
+    {
+      "product_name": "Noise Cancelling Headphones",
+      "revenue": 87905.8
+    },
+    {
+      "product_name": "Power Bank",
+      "revenue": 84387.74
+    },
+    {
+      "product_name": "Webcam HD",
+      "revenue": 81348.21
+    },
+    {
+      "product_name": "Bluetooth Speaker",
+      "revenue": 80418.07
+    },
+    {
+      "product_name": "Mechanical Keyboard",
+      "revenue": 70788.81
+    },
+    {
+      "product_name": "Smartwatch",
+      "revenue": 64688.58
+    }
+  ],
+  "regional_performance": [
+    {
+      "region": "West",
+      "revenue": 388099.23
+    },
+    {
+      "region": "North",
+      "revenue": 372445.86
+    },
+    {
+      "region": "South",
+      "revenue": 362403.64
+    },
+    {
+      "region": "Central",
+      "revenue": 334642.9
+    },
+    {
+      "region": "East",
+      "revenue": 332280.21
+    }
+  ],
+  "category_share": [
+    {
+      "category": "Electronics",
+      "revenue": 843652.73
+    },
+    {
+      "category": "Office Supplies",
+      "revenue": 294668.07
+    },
+    {
+      "category": "Home & Kitchen",
+      "revenue": 287523.82
+    },
+    {
+      "category": "Sports & Outdoors",
+      "revenue": 231828.61
+    },
+    {
+      "category": "Apparel",
+      "revenue": 132198.61
+    }
+  ],
+  "top_customers": [
+    {
+      "customer_id": "CUST1031",
+      "customer_name": "Tammy Allison",
+      "revenue": 7257.82
+    },
+    {
+      "customer_id": "CUST1144",
+      "customer_name": "Brenda Levy",
+      "revenue": 6164.99
+    },
+    {
+      "customer_id": "CUST1200",
+      "customer_name": "James Martin",
+      "revenue": 5664.74
+    },
+    {
+      "customer_id": "CUST1489",
+      "customer_name": "Julie Wilson",
+      "revenue": 5647.58
+    },
+    {
+      "customer_id": "CUST1351",
+      "customer_name": "Todd Thomas",
+      "revenue": 5599.89
+    },
+    {
+      "customer_id": "CUST1446",
+      "customer_name": "Stacey Snyder",
+      "revenue": 5586.23
+    },
+    {
+      "customer_id": "CUST1224",
+      "customer_name": "Mitchell Jackson",
+      "revenue": 5110.06
+    },
+    {
+      "customer_id": "CUST1102",
+      "customer_name": "Joseph Hayes",
+      "revenue": 5078.49
+    },
+    {
+      "customer_id": "CUST1214",
+      "customer_name": "Rachel Romero",
+      "revenue": 5003.29
+    },
+    {
+      "customer_id": "CUST1088",
+      "customer_name": "Samuel Rivas",
+      "revenue": 4895.46
+    }
+  ],
+  "weekday_vs_weekend": [
+    {
+      "label": "Weekday",
+      "total_revenue": 1288705.23,
+      "avg_order_value": 299.98,
+      "orders": 4296
+    },
+    {
+      "label": "Weekend",
+      "total_revenue": 501166.61,
+      "avg_order_value": 296.55,
+      "orders": 1690
+    }
+  ]
+}

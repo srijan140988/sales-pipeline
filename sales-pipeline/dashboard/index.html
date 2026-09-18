@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Ledger — ETL Analytics Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+  :root{
+    --ink:#12181C;
+    --panel:#171F24;
+    --panel-2:#1C252B;
+    --paper:#E9E6DE;
+    --paper-dim:#A9AEA8;
+    --hair:#2B363C;
+    --green:#5FA98A;
+    --green-dim:#3E6E5B;
+    --clay:#C97C64;
+    --clay-dim: #8C594A;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'IBM Plex Mono', ui-monospace, monospace;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .serif{font-family:'Source Serif 4', Georgia, serif;}
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:56px 24px 96px;
+  }
+  .num{ font-variant-numeric: tabular-nums; }
+
+  /* ---- Masthead ---- */
+  .masthead{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:1px solid var(--hair);
+    padding-bottom:22px;
+    margin-bottom:36px;
+    gap:24px;
+    flex-wrap:wrap;
+  }
+  .masthead h1{
+    font-family:'Source Serif 4', Georgia, serif;
+    font-weight:600;
+    font-size:2rem;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .masthead p{
+    margin:0;
+    color:var(--paper-dim);
+    font-size:0.88rem;
+  }
+  .masthead .period{
+    text-align:right;
+    font-size:0.82rem;
+    color:var(--paper-dim);
+  }
+  .masthead .period strong{
+    display:block;
+    color:var(--paper);
+    font-size:0.95rem;
+    margin-bottom:3px;
+  }
+
+  /* ---- KPI ledger row ---- */
+  .kpi-row{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    border:1px solid var(--hair);
+    margin-bottom:48px;
+  }
+  .kpi{
+    padding:18px 16px;
+    border-right:1px solid var(--hair);
+  }
+  .kpi:last-child{border-right:none;}
+  .kpi .label{
+    font-size:0.7rem;
+    color:var(--paper-dim);
+    margin-bottom:8px;
+    letter-spacing:0.02em;
+  }
+  .kpi .value{
+    font-size:1.35rem;
+    font-weight:600;
+    color:var(--green);
+  }
+  @media(max-width:760px){
+    .kpi-row{grid-template-columns:repeat(2,1fr);}
+    .kpi:nth-child(2){border-right:none;}
+    .kpi{border-bottom:1px solid var(--hair);}
+  }
+
+  /* ---- Sections ---- */
+  section{ margin-bottom:52px; }
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    border-bottom:1px solid var(--hair);
+    padding-bottom:10px;
+    margin-bottom:20px;
+  }
+  .section-head h2{
+    font-family:'Source Serif 4', Georgia, serif;
+    font-weight:600;
+    font-size:1.15rem;
+    margin:0;
+  }
+  .section-head .note{
+    font-size:0.72rem;
+    color:var(--paper-dim);
+  }
+
+  .chart-box{
+    border:1px solid var(--hair);
+    background:var(--panel);
+    padding:20px 20px 8px;
+  }
+  .chart-box canvas{ max-height:320px; }
+
+  .grid-2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+  }
+  @media(max-width:760px){ .grid-2{ grid-template-columns:1fr; } }
+
+  /* ---- Ledger table ---- */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.85rem;
+  }
+  thead th{
+    text-align:left;
+    font-weight:500;
+    color:var(--paper-dim);
+    font-size:0.72rem;
+    padding:8px 10px;
+    border-bottom:1px solid var(--hair);
+  }
+  thead th.r{ text-align:right; }
+  tbody td{
+    padding:9px 10px;
+    border-bottom:1px solid var(--hair);
+  }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody td.r{ text-align:right; }
+  tbody tr:hover{ background:var(--panel-2); }
+  .rank{ color:var(--paper-dim); width:28px; }
+  .bar-cell{ position:relative; }
+  .bar-fill{
+    position:absolute;
+    left:0; top:0; bottom:0;
+    background:var(--green-dim);
+    opacity:0.35;
+    z-index:0;
+  }
+  .bar-text{ position:relative; z-index:1; }
+
+  /* ---- weekday compare ---- */
+  .compare{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    border:1px solid var(--hair);
+  }
+  .compare > div{
+    padding:20px;
+    border-right:1px solid var(--hair);
+  }
+  .compare > div:last-child{ border-right:none; }
+  .compare h3{
+    font-family:'Source Serif 4', serif;
+    font-size:1rem;
+    margin:0 0 14px;
+    font-weight:600;
+  }
+  .compare .row{
+    display:flex;
+    justify-content:space-between;
+    padding:6px 0;
+    font-size:0.85rem;
+    border-bottom:1px dashed var(--hair);
+  }
+  .compare .row:last-child{ border-bottom:none; }
+  .compare .row .k{ color:var(--paper-dim); }
+
+  footer{
+    border-top:1px solid var(--hair);
+    padding-top:20px;
+    color:var(--paper-dim);
+    font-size:0.75rem;
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  footer a{ color:var(--green); text-decoration:none; }
+  footer a:hover{ text-decoration:underline; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <h1>Sales Ledger</h1>
+      <p>ETL-driven revenue &amp; performance report — built from raw transaction exports</p>
+    </div>
+    <div class="period">
+      <strong id="periodRange">—</strong>
+      generated from cleaned fact_sales dataset
+    </div>
+  </div>
+
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <section>
+    <div class="section-head">
+      <h2>Monthly Revenue Trend</h2>
+      <span class="note">net revenue, 24 months</span>
+    </div>
+    <div class="chart-box">
+      <canvas id="chartMonthly"></canvas>
+    </div>
+  </section>
+
+  <section>
+    <div class="grid-2">
+      <div>
+        <div class="section-head">
+          <h2>Top Products</h2>
+          <span class="note">by net revenue</span>
+        </div>
+        <div class="chart-box">
+          <canvas id="chartProducts"></canvas>
+        </div>
+      </div>
+      <div>
+        <div class="section-head">
+          <h2>Regional Performance</h2>
+          <span class="note">by net revenue</span>
+        </div>
+        <div class="chart-box">
+          <canvas id="chartRegion"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="grid-2">
+      <div>
+        <div class="section-head">
+          <h2>Category Share</h2>
+          <span class="note">% of net revenue</span>
+        </div>
+        <div class="chart-box">
+          <canvas id="chartCategory"></canvas>
+        </div>
+      </div>
+      <div>
+        <div class="section-head">
+          <h2>Weekday vs Weekend</h2>
+          <span class="note">order patterns</span>
+        </div>
+        <div class="compare" id="compareBox" style="height:100%"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Top Customers</h2>
+      <span class="note">lifetime net revenue</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th>#</th><th>Customer</th><th>ID</th><th class="r">Revenue</th></tr>
+      </thead>
+      <tbody id="customerTable"></tbody>
+    </table>
+  </section>
+
+  <footer>
+    <span>Pipeline: Python · Pandas · SQL · PostgreSQL · Matplotlib/Seaborn</span>
+    <span>Data cleaned &amp; aggregated via <a href="#" id="repoLink">ETL pipeline</a></span>
+  </footer>
+
+</div>
+
+<script>
+const DATA = {"kpis": {"total_revenue": 1789871.84, "total_orders": 5986, "avg_order_value": 299.01, "total_units_sold": 11618, "unique_customers": 899, "date_range": "2024-01-01 to 2025-12-31"}, "monthly_revenue": [{"month": "Jan 2024", "revenue": 75116.74}, {"month": "Feb 2024", "revenue": 71028.34}, {"month": "Mar 2024", "revenue": 74817.92}, {"month": "Apr 2024", "revenue": 82503.93}, {"month": "May 2024", "revenue": 76604.48}, {"month": "Jun 2024", "revenue": 66623.35}, {"month": "Jul 2024", "revenue": 73385.01}, {"month": "Aug 2024", "revenue": 78993.35}, {"month": "Sep 2024", "revenue": 82884.76}, {"month": "Oct 2024", "revenue": 66136.92}, {"month": "Nov 2024", "revenue": 68664.78}, {"month": "Dec 2024", "revenue": 72968.8}, {"month": "Jan 2025", "revenue": 85092.2}, {"month": "Feb 2025", "revenue": 67982.3}, {"month": "Mar 2025", "revenue": 79284.31}, {"month": "Apr 2025", "revenue": 94080.17}, {"month": "May 2025", "revenue": 77307.09}, {"month": "Jun 2025", "revenue": 59479.89}, {"month": "Jul 2025", "revenue": 68490.09}, {"month": "Aug 2025", "revenue": 73115.59}, {"month": "Sep 2025", "revenue": 63260.63}, {"month": "Oct 2025", "revenue": 81794.7}, {"month": "Nov 2025", "revenue": 68328.57}, {"month": "Dec 2025", "revenue": 81927.92}], "top_products": [{"product_name": "USB-C Hub", "revenue": 100153.24}, {"product_name": "Wireless Mouse", "revenue": 94205.89}, {"product_name": "27in Monitor", "revenue": 90218.55}, {"product_name": "Portable SSD 1TB", "revenue": 89537.84}, {"product_name": "Noise Cancelling Headphones", "revenue": 87905.8}, {"product_name": "Power Bank", "revenue": 84387.74}, {"product_name": "Webcam HD", "revenue": 81348.21}, {"product_name": "Bluetooth Speaker", "revenue": 80418.07}, {"product_name": "Mechanical Keyboard", "revenue": 70788.81}, {"product_name": "Smartwatch", "revenue": 64688.58}], "regional_performance": [{"region": "West", "revenue": 388099.23}, {"region": "North", "revenue": 372445.86}, {"region": "South", "revenue": 362403.64}, {"region": "Central", "revenue": 334642.9}, {"region": "East", "revenue": 332280.21}], "category_share": [{"category": "Electronics", "revenue": 843652.73}, {"category": "Office Supplies", "revenue": 294668.07}, {"category": "Home & Kitchen", "revenue": 287523.82}, {"category": "Sports & Outdoors", "revenue": 231828.61}, {"category": "Apparel", "revenue": 132198.61}], "top_customers": [{"customer_id": "CUST1031", "customer_name": "Tammy Allison", "revenue": 7257.82}, {"customer_id": "CUST1144", "customer_name": "Brenda Levy", "revenue": 6164.99}, {"customer_id": "CUST1200", "customer_name": "James Martin", "revenue": 5664.74}, {"customer_id": "CUST1489", "customer_name": "Julie Wilson", "revenue": 5647.58}, {"customer_id": "CUST1351", "customer_name": "Todd Thomas", "revenue": 5599.89}, {"customer_id": "CUST1446", "customer_name": "Stacey Snyder", "revenue": 5586.23}, {"customer_id": "CUST1224", "customer_name": "Mitchell Jackson", "revenue": 5110.06}, {"customer_id": "CUST1102", "customer_name": "Joseph Hayes", "revenue": 5078.49}, {"customer_id": "CUST1214", "customer_name": "Rachel Romero", "revenue": 5003.29}, {"customer_id": "CUST1088", "customer_name": "Samuel Rivas", "revenue": 4895.46}], "weekday_vs_weekend": [{"label": "Weekday", "total_revenue": 1288705.23, "avg_order_value": 299.98, "orders": 4296}, {"label": "Weekend", "total_revenue": 501166.61, "avg_order_value": 296.55, "orders": 1690}]};
+
+function money(v, decimals=0){
+  return '$' + Number(v).toLocaleString('en-US', {minimumFractionDigits:decimals, maximumFractionDigits:decimals});
+}
+
+// ---- Masthead period ----
+document.getElementById('periodRange').textContent = DATA.kpis.date_range;
+
+// ---- KPI row ----
+const kpiRow = document.getElementById('kpiRow');
+const kpis = [
+  {label:'Total Net Revenue', value: money(DATA.kpis.total_revenue)},
+  {label:'Total Orders', value: DATA.kpis.total_orders.toLocaleString('en-US')},
+  {label:'Avg Order Value', value: money(DATA.kpis.avg_order_value, 2)},
+  {label:'Units Sold', value: DATA.kpis.total_units_sold.toLocaleString('en-US')},
+  {label:'Unique Customers', value: DATA.kpis.unique_customers.toLocaleString('en-US')},
+];
+kpiRow.innerHTML = kpis.map(k => `
+  <div class="kpi">
+    <div class="label">${k.label}</div>
+    <div class="value num">${k.value}</div>
+  </div>
+`).join('');
+
+// ---- Chart.js shared defaults ----
+Chart.defaults.color = '#A9AEA8';
+Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+Chart.defaults.font.size = 11;
+const gridColor = '#2B363C';
+
+// Monthly revenue line chart
+new Chart(document.getElementById('chartMonthly'), {
+  type: 'line',
+  data: {
+    labels: DATA.monthly_revenue.map(d => d.month),
+    datasets: [{
+      data: DATA.monthly_revenue.map(d => d.revenue),
+      borderColor: '#5FA98A',
+      backgroundColor: 'rgba(95,169,138,0.12)',
+      borderWidth: 2,
+      pointRadius: 2.5,
+      pointBackgroundColor: '#5FA98A',
+      fill: true,
+      tension: 0.25,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display:false }, tooltip: { callbacks: { label: c => money(c.raw) } } },
+    scales: {
+      x: { grid: { color: gridColor, drawTicks:false }, ticks: { maxRotation:0, autoSkip:true, maxTicksLimit:8 } },
+      y: { grid: { color: gridColor }, ticks: { callback: v => money(v) } }
+    }
+  }
+});
+
+// Top products horizontal bar
+new Chart(document.getElementById('chartProducts'), {
+  type: 'bar',
+  data: {
+    labels: DATA.top_products.map(d => d.product_name),
+    datasets: [{
+      data: DATA.top_products.map(d => d.revenue),
+      backgroundColor: '#5FA98A',
+      borderRadius: 2,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: { legend: { display:false }, tooltip: { callbacks: { label: c => money(c.raw) } } },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { callback: v => money(v) } },
+      y: { grid: { display:false } }
+    }
+  }
+});
+
+// Regional performance bar
+new Chart(document.getElementById('chartRegion'), {
+  type: 'bar',
+  data: {
+    labels: DATA.regional_performance.map(d => d.region),
+    datasets: [{
+      data: DATA.regional_performance.map(d => d.revenue),
+      backgroundColor: '#C97C64',
+      borderRadius: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display:false }, tooltip: { callbacks: { label: c => money(c.raw) } } },
+    scales: {
+      x: { grid: { display:false } },
+      y: { grid: { color: gridColor }, ticks: { callback: v => money(v) } }
+    }
+  }
+});
+
+// Category share doughnut
+new Chart(document.getElementById('chartCategory'), {
+  type: 'doughnut',
+  data: {
+    labels: DATA.category_share.map(d => d.category),
+    datasets: [{
+      data: DATA.category_share.map(d => d.revenue),
+      backgroundColor: ['#5FA98A','#C97C64','#7C93A8','#B8A05F','#8C7AA8'],
+      borderColor: '#171F24',
+      borderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position:'bottom', labels:{ boxWidth:10, padding:14, font:{size:10.5} } },
+      tooltip: { callbacks: { label: c => `${c.label}: ${money(c.raw)}` } }
+    }
+  }
+});
+
+// Weekday vs weekend compare box
+const compareBox = document.getElementById('compareBox');
+compareBox.innerHTML = DATA.weekday_vs_weekend.map(d => `
+  <div>
+    <h3>${d.label}</h3>
+    <div class="row"><span class="k">Total Revenue</span><span class="num">${money(d.total_revenue)}</span></div>
+    <div class="row"><span class="k">Avg Order Value</span><span class="num">${money(d.avg_order_value, 2)}</span></div>
+    <div class="row"><span class="k">Orders</span><span class="num">${d.orders.toLocaleString('en-US')}</span></div>
+  </div>
+`).join('');
+
+// Top customers table
+const maxRev = Math.max(...DATA.top_customers.map(c => c.revenue));
+const tbody = document.getElementById('customerTable');
+tbody.innerHTML = DATA.top_customers.map((c, i) => `
+  <tr>
+    <td class="rank num">${i+1}</td>
+    <td>${c.customer_name}</td>
+    <td class="num" style="color:var(--paper-dim)">${c.customer_id}</td>
+    <td class="r bar-cell num">
+      <span class="bar-fill" style="width:${(c.revenue/maxRev*100).toFixed(0)}%"></span>
+      <span class="bar-text">${money(c.revenue, 2)}</span>
+    </td>
+  </tr>
+`).join('');
+
+document.getElementById('repoLink').href = window.location.href;
+</script>
+
+</body>
+</html>

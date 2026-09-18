@@ -1,0 +1,22 @@
+SALES ANALYSIS SUMMARY REPORT
+========================================
+Period: 2024-01-01 to 2025-12-31
+Total Net Revenue: $1,789,871.84
+Total Orders: 5,986
+Average Order Value: $299.01
+Units Sold: 11,618
+Unique Customers: 899
+
+Top 5 Products by Revenue:
+  - USB-C Hub: $100,153.24
+  - Wireless Mouse: $94,205.89
+  - 27in Monitor: $90,218.55
+  - Portable SSD 1TB: $89,537.84
+  - Noise Cancelling Headphones: $87,905.80
+
+Regional Performance:
+  - West: $388,099.23
+  - North: $372,445.86
+  - South: $362,403.64
+  - Central: $334,642.90
+  - East: $332,280.21
